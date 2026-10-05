@@ -1,0 +1,525 @@
+/* ==========================================================================
+   Din Bilforhandler AS — retning A, "Hallen"
+   Paletten er pipettert fra firmaskiltet i deres egne bilder: plommesvart
+   ground, benhvit tekst, crimson strek. Se design/DESIGNPLAN.md.
+   Siden forplikter seg bevisst til ett mørkt uttrykk, så alle farger males
+   eksplisitt og det finnes ingen lys variant.
+   ========================================================================== */
+:root{
+  --ink-950:#171114; --ink-900:#1E1619; --ink-850:#251B20;
+  --ink-700:#413038;
+  --bone:#F2EEE9; --bone-soft:#CFC5C0; --bone-dim:#B6ADA8; --bone-faint:#9A8F8B;
+  --crimson:#93262C; --crimson-lit:#C4343C;
+  --line:rgba(242,238,233,.12);
+  --gutter:clamp(16px,4vw,44px);
+  --ease-out:cubic-bezier(.19,1,.22,1);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;
+  /* den faste headeren skal ikke dekke overskriften man hopper til */
+  scroll-padding-top:89px;scroll-behavior:smooth}
+@media (max-width:860px){ html{scroll-padding-top:95px} }
+@media (prefers-reduced-motion:reduce){ html{scroll-behavior:auto} }
+body{
+  margin:0;
+  background:var(--ink-950);
+  color:var(--bone);
+  font-family:var(--font-archivo),system-ui,-apple-system,"Segoe UI",sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+img{display:block;max-width:100%}
+a{color:inherit}
+h1,h2,h3,p,ul,figure{margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid #E4DCD6;outline-offset:2px}
+.visually-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;
+  overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+/* Tastaturbrukere skal slippe å tabbe gjennom menyen på hver side. */
+.skip{position:fixed;top:8px;left:8px;z-index:60;padding:12px 16px;
+  background:var(--bone);color:#171114;font-weight:600;text-decoration:none;
+  transform:translateY(-200%)}
+.skip:focus-visible{transform:none}
+
+/* Den røde streken fra logoen går igjen over hver seksjonsoverskrift. */
+.wall-head :is(h1,h2)::before,.kontakt h2::before,.topp h1::before,
+.seksjon-h::before{content:"";
+  display:block;width:44px;height:3px;background:var(--crimson-lit);margin-bottom:16px}
+
+/* ---------------------------------------------------------------- header -- */
+/* Fast i toppen på hele siden: menyen skal alltid vaere innen rekkevidde.
+   Fixed framfor sticky fordi hero-bildet skal ligge helt inntil toppen. */
+.topwrap{position:fixed;top:0;left:0;right:0;z-index:50;color:var(--bone);
+  transition:background .28s ease,border-color .28s ease}
+.topwrap{border-bottom:1px solid transparent}
+/* Hero-bildet er en lys hall, så den transparente headeren trenger egen
+   bunn for å holde seg lesbar før man har rullet. */
+.topwrap:not(.solid)::before{content:"";position:absolute;inset:0 0 auto;
+  height:190%;pointer-events:none;z-index:-1;opacity:1;transition:opacity .28s ease;
+  background:linear-gradient(rgba(16,11,13,.92) 0%,rgba(16,11,13,.72) 42%,
+             rgba(16,11,13,0) 100%)}
+.topwrap.solid{background:rgba(23,17,20,.92);backdrop-filter:blur(10px);
+  border-bottom-color:var(--line)}
+/* Holder av plassen den faste linja tar på undersidene.
+   76/82 px innhold + 1 px bunnlinje. */
+.topspacer{height:77px}
+@media (max-width:860px){ .topspacer{height:83px} }
+.top{display:flex;align-items:center;justify-content:space-between;
+  padding:16px var(--gutter);min-height:76px}
+@media (max-width:860px){ .top{min-height:82px} }
+.mark{display:block;text-decoration:none}
+.mark img{height:36px;width:auto;filter:drop-shadow(0 2px 10px rgba(0,0,0,.8))}
+.topwrap.solid .mark img{filter:none}
+.nav-desk{display:flex;align-items:center;gap:30px;font-size:14.5px;font-weight:500}
+.nav-desk a{position:relative;text-decoration:none;padding:12px 0;opacity:.92;
+  transition:opacity .2s}
+.nav-desk a:hover,.nav-desk a[aria-current=page]{opacity:1}
+.nav-desk a:not(:last-child)::after{content:"";position:absolute;left:0;right:0;
+  bottom:6px;height:2px;background:var(--crimson-lit);transform:scaleX(0);
+  transform-origin:left;transition:transform .3s var(--ease-out)}
+.nav-desk a:not(:last-child):is(:hover,[aria-current=page])::after{transform:scaleX(1)}
+/* Siste menypunkt er kontakt, og er sidens faste handling i toppen. */
+.nav-desk a:last-child{padding:11px 18px;border:1px solid rgba(242,238,233,.5);
+  font-weight:600;opacity:1;
+  transition:background .22s,border-color .22s,color .22s}
+.nav-desk a:last-child:is(:hover,[aria-current=page]){background:var(--bone);
+  border-color:var(--bone);color:#171114}
+
+.burger{display:none;appearance:none;background:none;border:0;padding:9px;
+  cursor:pointer;width:44px;height:44px;color:inherit}
+.burger span{display:block;height:1.5px;background:currentColor;margin:5px 0;
+  transition:transform .3s cubic-bezier(.22,1,.36,1),opacity .2s}
+.menu-open .burger span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.menu-open .burger span:nth-child(2){opacity:0}
+.menu-open .burger span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+
+.drawer{position:absolute;top:100%;left:0;right:0;background:#100B0D;
+  display:grid;grid-template-rows:0fr;overflow:hidden;z-index:40;
+  /* lukket meny skal ikke kunne tabbes inn i */
+  visibility:hidden;
+  transition:grid-template-rows .38s cubic-bezier(.22,1,.36,1),visibility 0s .38s}
+.menu-open .drawer{grid-template-rows:1fr;visibility:visible;
+  transition:grid-template-rows .38s cubic-bezier(.22,1,.36,1),visibility 0s}
+.drawer-in{min-height:0;overflow:hidden}
+.drawer a{display:block;padding:15px 22px;text-decoration:none;font-size:19px;
+  font-weight:600;border-top:1px solid rgba(242,238,233,.08)}
+.drawer a:first-child{border-top:0}
+.drawer a[aria-current=page]{background:rgba(242,238,233,.07)}
+
+@media (max-width:860px){
+  .burger{display:block}
+  .nav-desk{display:none}
+}
+
+/* ------------------------------------------------------------------ hero -- */
+.hero{position:relative;height:min(88svh,820px);min-height:560px;overflow:hidden}
+.hero > img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  object-position:52% 62%;
+  animation:lightsUp 1900ms var(--ease-out) both}
+/* sidens ene orkestrerte bevegelse: lysene slås på i hallen */
+@keyframes lightsUp{
+  from{filter:brightness(.16) contrast(1.5) saturate(.4);transform:scale(1.07)}
+  to  {filter:none;transform:none}
+}
+/* Mørkt nedenfra og fra venstre, der teksten står. Bilen til høyre får lys. */
+.hero::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:
+    linear-gradient(to right,rgba(23,17,20,.86) 0%,rgba(23,17,20,.5) 38%,
+      rgba(23,17,20,0) 68%),
+    linear-gradient(to top,rgba(23,17,20,.97) 0%,rgba(23,17,20,.6) 24%,
+      rgba(23,17,20,.08) 58%,rgba(23,17,20,.42) 100%)}
+.hero-txt{position:absolute;left:var(--gutter);right:var(--gutter);
+  bottom:clamp(32px,6vw,72px);z-index:10;
+  animation:riseIn 620ms 260ms var(--ease-out) both}
+@keyframes riseIn{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+.hero-eyebrow{display:flex;align-items:center;gap:12px;font-size:14px;
+  font-weight:600;color:#E6DDD8;margin-bottom:18px}
+.hero-eyebrow::before{content:"";width:44px;height:3px;background:var(--crimson-lit)}
+.hero h1{font-size:clamp(34px,5.6vw,74px);font-weight:700;font-stretch:116%;
+  line-height:1.02;letter-spacing:-.028em;max-width:15ch;text-wrap:balance;
+  text-shadow:0 2px 30px rgba(0,0,0,.55)}
+.hero-sub{margin-top:20px;font-size:clamp(16px,1.6vw,18.5px);line-height:1.55;
+  max-width:46ch;color:#E3DAD5}
+.hero-act{margin-top:28px;display:flex;gap:12px;flex-wrap:wrap}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  min-height:48px;padding:13px 24px;text-decoration:none;font-weight:600;
+  font-size:15.5px;border:1px solid transparent;cursor:pointer;
+  /* maa nullstilles eksplisitt: paa <button> er standard bakgrunn buttonface */
+  appearance:none;background:transparent;color:var(--bone);
+  transition:background .22s,color .22s,border-color .22s}
+.btn-p{background:var(--crimson-lit);border-color:var(--crimson-lit);color:#fff}
+.btn-p:hover{background:var(--bone);border-color:var(--bone);color:#171114}
+.btn-s{border-color:rgba(242,238,233,.5);color:var(--bone);
+  background:rgba(23,17,20,.35)}
+.btn-s:hover{border-color:var(--bone);background:rgba(242,238,233,.12)}
+.btn svg{width:18px;height:18px;flex:none;transition:transform .3s var(--ease-out)}
+.btn:hover svg{transform:translateX(4px)}
+
+/* ----------------------------------------------------------------- fakta -- */
+/* Fire korte løfter rett under hero. Samme 1px fuge som lagerveggen. */
+.fakta{list-style:none;padding:0;display:grid;grid-template-columns:repeat(4,1fr);
+  border-bottom:1px solid var(--line);background:var(--ink-900)}
+.fakta li{display:flex;gap:14px;align-items:flex-start;
+  padding:clamp(20px,2.6vw,30px) clamp(16px,2.4vw,30px);
+  border-left:1px solid var(--line)}
+.fakta li:first-child{border-left:0}
+.fakta svg{width:26px;height:26px;flex:none;color:var(--crimson-lit);margin-top:1px}
+.fakta b{display:block;font-size:16px;font-weight:700;line-height:1.25}
+.fakta span{display:block;margin-top:5px;font-size:14px;line-height:1.5;
+  color:var(--bone-dim)}
+/* Inne i en seksjon: tre kolonner med ramme rundt, og litt mer luft. */
+.fakta.ramme{grid-template-columns:repeat(3,1fr);border:1px solid var(--line)}
+.fakta.ramme li{flex-direction:column;gap:16px;
+  padding:clamp(22px,3vw,36px) clamp(18px,2.6vw,32px)}
+.fakta.ramme svg{width:30px;height:30px}
+.fakta.ramme b{font-size:19px;font-stretch:108%;letter-spacing:-.01em}
+.fakta.ramme span{font-size:15.5px;margin-top:8px;line-height:1.55}
+@media (max-width:860px){
+  .fakta.ramme{grid-template-columns:1fr}
+  .fakta.ramme li{border-left:0;flex-direction:row}
+  .fakta.ramme li + li{border-top:1px solid var(--line)}
+}
+@media (max-width:1000px){
+  .fakta:not(.ramme){grid-template-columns:repeat(2,1fr)}
+  .fakta:not(.ramme) li:nth-child(odd){border-left:0}
+  .fakta:not(.ramme) li:nth-child(n+3){border-top:1px solid var(--line)}
+}
+@media (max-width:520px){
+  .fakta:not(.ramme){grid-template-columns:1fr}
+  .fakta li{border-left:0}
+  .fakta li + li{border-top:1px solid var(--line)}
+}
+
+/* ------------------------------------------------------------------ band -- */
+/* Filmen har samme bunnfarge som siden, så den står uten ramme.
+   Bred utgave på store skjermer, høy utgave på mobil. */
+.film{padding:clamp(8px,2vw,28px) var(--gutter);
+  border-bottom:1px solid rgba(242,238,233,.1)}
+.film video{display:block;width:100%;height:auto;margin-inline:auto}
+.film .film-bred{max-width:1280px;aspect-ratio:16/9}
+.film .film-hoy{display:none;max-width:460px;aspect-ratio:9/16}
+@media (max-width:700px){
+  .film .film-bred{display:none}
+  .film .film-hoy{display:block}
+}
+
+/* ------------------------------------------------------------ lagerveggen -- */
+.wall-head{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;
+  padding:clamp(40px,6vw,76px) var(--gutter) 26px;flex-wrap:wrap}
+.wall-head :is(h1,h2){font-size:clamp(26px,3.8vw,44px);font-weight:700;
+  font-stretch:112%;letter-spacing:-.02em;line-height:1.05}
+.wall-head p{font-size:14.5px;color:var(--bone-dim)}
+/* Rutene står hver for seg med luft imellom. Ingen radius, ingen skygge.
+   Bildet står urørt øverst, tallene og handlingene ligger under. */
+.wall{display:grid;grid-template-columns:repeat(3,1fr);
+  gap:clamp(22px,2.6vw,40px);padding:6px var(--gutter) 0}
+@media (max-width:1000px){ .wall{grid-template-columns:repeat(2,1fr)} }
+.cell{position:relative;background:var(--ink-900);
+  outline:1px solid var(--line);transition:background .3s,outline-color .3s}
+.cell:hover,.cell:focus-within{background:var(--ink-850);
+  outline-color:rgba(242,238,233,.26)}
+.cell-in{display:flex;flex-direction:column;height:100%}
+.cell-img{position:relative;aspect-ratio:4/3;overflow:hidden;background:var(--ink-950)}
+.cell-img > img{width:100%;height:100%;object-fit:cover;
+  transition:transform .55s var(--ease-out)}
+.cell:hover .cell-img > img,.cell:focus-within .cell-img > img{transform:scale(1.04)}
+.cell-tag{position:absolute;top:12px;left:12px;z-index:2;padding:6px 10px;
+  background:rgba(18,13,15,.86);backdrop-filter:blur(6px);
+  font-size:12.5px;font-weight:600;color:var(--bone)}
+.cell-top{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;
+  padding:clamp(18px,1.8vw,26px) clamp(18px,1.8vw,26px) 0}
+.cell-name{font-weight:700;font-size:clamp(18px,1.5vw,21px);line-height:1.2;
+  letter-spacing:-.01em}
+.cell-name em{display:block;font-style:normal;font-weight:400;font-size:14.5px;
+  color:var(--bone-dim);margin-top:6px;letter-spacing:0}
+.cell-pris{font-weight:700;font-size:clamp(18px,1.5vw,21px);
+  font-variant-numeric:tabular-nums;white-space:nowrap;letter-spacing:-.01em}
+/* kortlinja og utvidknappen brukes bare i den kompakte mobilvisningen */
+.cell-kort,.cell-veksle{display:none}
+.cell-mer{display:flex;flex-direction:column;flex:1}
+.cell-mer-in{display:flex;flex-direction:column;flex:1;gap:20px;
+  padding:18px clamp(18px,1.8vw,26px) clamp(18px,1.8vw,26px)}
+.cell-spec{list-style:none;padding:16px 0 0;display:flex;flex-wrap:wrap;
+  gap:6px 18px;border-top:1px solid var(--line);
+  font-size:14.5px;font-weight:500;color:var(--bone-soft);
+  font-variant-numeric:tabular-nums}
+.cell-spec .kun-mobil{display:none}
+/* handlingene er alltid synlige: hover finnes ikke på berøringsskjerm */
+.cell-cta{display:flex;gap:10px;margin-top:auto}
+.cell-cta > *{flex:1;display:inline-flex;align-items:center;justify-content:center;
+  min-height:46px;padding:10px 12px;text-align:center;font-size:14.5px;font-weight:600;
+  background:var(--bone);color:#171114;text-decoration:none;
+  border:1px solid var(--bone);cursor:pointer;
+  transition:background .22s,color .22s,border-color .22s}
+.cell-cta > *:hover{background:var(--crimson-lit);border-color:var(--crimson-lit);
+  color:#fff}
+.cell-cta > * + *{background:transparent;color:var(--bone);
+  border-color:rgba(242,238,233,.45)}
+.cell-cta > * + *:hover{background:rgba(242,238,233,.12);border-color:var(--bone);
+  color:var(--bone)}
+.cell.er-solgt .cell-img > img{filter:grayscale(1) brightness(.5)}
+.cell.er-solgt .cell-top,.cell.er-solgt .cell-spec{color:var(--bone-dim)}
+.badge-solgt{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  z-index:3;background:var(--crimson);color:#fff;padding:8px 18px;
+  font-weight:700;font-size:14px}
+
+/* Mobil: hver bil er en lav rad med lite bilde, så hele lageret får plass på
+   et par skjermhøyder. Trykk på raden folder ut nøkkeltall og handlinger. */
+@media (max-width:700px){
+  .wall{grid-template-columns:1fr;gap:10px;padding-top:0}
+  .cell-hode{position:relative;display:grid;grid-template-columns:108px 1fr;
+    align-items:stretch}
+  .cell-img{aspect-ratio:auto;min-height:92px}
+  .cell-img > img{position:absolute;inset:0}
+  .cell:hover .cell-img > img,.cell:focus-within .cell-img > img{transform:none}
+  .cell-tag{display:none}
+  .badge-solgt{padding:4px 9px;font-size:12px}
+  .cell-top{display:grid;grid-template-columns:1fr auto;align-items:center;
+    gap:2px 10px;padding:11px 8px 11px 14px}
+  .cell-name{font-size:16.5px}
+  .cell-name em{font-size:13.5px;margin-top:2px}
+  .cell-kort{display:block;grid-column:1;font-size:13.5px;color:var(--bone-dim);
+    font-variant-numeric:tabular-nums}
+  .cell-pris{grid-column:1;font-size:16px;margin-top:3px}
+  .cell-veksle{display:grid;place-items:center;grid-column:2;grid-row:1 / span 3;
+    width:44px;height:44px;appearance:none;background:none;border:0;padding:0;
+    color:var(--bone-dim);cursor:pointer}
+  /* hele raden er trykkflate, ikke bare pila */
+  .cell-veksle::after{content:"";position:absolute;inset:0}
+  .cell-veksle svg{width:20px;height:20px;transition:transform .3s var(--ease-out)}
+  .cell-in[data-apen=true] .cell-veksle svg{transform:rotate(180deg)}
+  .cell-in[data-apen=true] .cell-veksle{color:var(--bone)}
+  /* lukket innhold skal ikke kunne tabbes inn i */
+  .cell-mer{display:grid;grid-template-rows:0fr;visibility:hidden;
+    transition:grid-template-rows .34s var(--ease-out),visibility 0s .34s}
+  .cell-in[data-apen=true] .cell-mer{grid-template-rows:1fr;visibility:visible;
+    transition:grid-template-rows .34s var(--ease-out),visibility 0s}
+  .cell-mer-in{min-height:0;overflow:hidden;gap:14px;padding:0 14px}
+  .cell-in[data-apen=true] .cell-mer-in{padding-bottom:14px}
+  .cell-spec{padding-top:12px;font-size:14px;gap:4px 14px}
+  .cell-spec .kun-mobil{display:list-item}
+  /* år og km står allerede i raden over */
+  .cell-spec .kun-stor{display:none}
+  .cell-cta{gap:8px}
+  .cell-cta > *{font-size:13.5px;padding:10px 6px;white-space:nowrap}
+}
+
+.vis-mer{display:flex;justify-content:center;
+  padding:clamp(24px,3vw,38px) var(--gutter) 0}
+
+/* --------------------------------------------------------------- kontakt -- */
+.kontakt{padding:clamp(44px,7vw,96px) var(--gutter)}
+.kontakt-grid{display:grid;grid-template-columns:1fr 1.15fr;
+  gap:clamp(26px,4vw,56px);align-items:start}
+@media (max-width:860px){ .kontakt-grid{grid-template-columns:1fr} }
+.kontakt h2{font-size:clamp(26px,3.8vw,44px);font-weight:700;font-stretch:112%;
+  letter-spacing:-.02em;line-height:1.05;margin-bottom:16px;text-wrap:balance}
+.lead{font-size:17px;line-height:1.6;color:var(--bone-soft);max-width:42ch;
+  margin-bottom:24px}
+.adr{font-size:15.5px;line-height:1.85;color:var(--bone-soft);
+  padding-top:20px;border-top:1px solid var(--line);max-width:42ch}
+.adr b{color:var(--bone);font-weight:600}
+
+.form{display:flex;flex-direction:column;gap:16px;
+  padding:clamp(18px,3vw,32px);background:var(--ink-900);
+  border:1px solid var(--line)}
+.f-row{display:grid;gap:16px;grid-template-columns:1fr 1fr}
+@media (max-width:700px){ .f-row{grid-template-columns:1fr} }
+.field{display:block}
+.field span{display:block;font-size:14px;font-weight:500;color:var(--bone-soft);
+  margin-bottom:7px}
+/* 16px i feltene: mindre skrift får iOS til å zoome inn ved fokus */
+.field input,.field select,.field textarea{width:100%;min-height:48px;font-size:16px;
+  background:rgba(242,238,233,.05);border:1px solid rgba(242,238,233,.22);
+  color:var(--bone);padding:12px 13px;border-radius:0;
+  transition:border-color .2s,background .2s}
+.field :is(input,select,textarea):hover{border-color:rgba(242,238,233,.42)}
+.field select option{background:var(--ink-900);color:var(--bone)}
+.field textarea{min-height:120px;resize:vertical}
+.field ::placeholder{color:var(--bone-faint)}
+.field :is(input,select,textarea):focus-visible{outline:2px solid #E4DCD6;
+  outline-offset:1px;border-color:transparent;background:rgba(242,238,233,.08)}
+.btn-send{align-self:flex-start;min-height:48px;padding:13px 28px;cursor:pointer;
+  font-weight:600;font-size:15.5px;background:var(--crimson-lit);color:#fff;
+  border:1px solid var(--crimson-lit);
+  transition:background .22s,color .22s,border-color .22s}
+.btn-send:hover{background:var(--bone);border-color:var(--bone);color:#171114}
+.smallprint{font-size:13px;color:var(--bone-faint);line-height:1.5}
+.sent{padding:22px;background:var(--ink-900);border:1px solid var(--line);
+  font-size:16px;line-height:1.6}
+
+/* ---------------------------------------------------------------- footer -- */
+.foot{padding:clamp(30px,4vw,52px) var(--gutter) 34px;
+  border-top:1px solid var(--line);background:rgba(0,0,0,.25)}
+.foot-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:26px}
+@media (max-width:700px){ .foot-grid{grid-template-columns:1fr;gap:22px} }
+.foot-logo{height:40px;width:auto;margin-bottom:14px}
+.foot h2{font-size:13.5px;font-weight:600;color:var(--bone-dim);margin-bottom:10px}
+.foot ul{list-style:none;padding:0;display:flex;flex-direction:column;gap:2px;
+  font-size:15px}
+.foot a{display:inline-block;padding:6px 0;text-decoration:none;color:var(--bone-soft);
+  transition:color .2s}
+.foot a:hover{color:var(--bone);text-decoration:underline;
+  text-decoration-color:var(--crimson-lit);text-underline-offset:4px}
+.foot .org{font-size:13.5px;color:var(--bone-faint);line-height:1.7}
+.foot-base{margin-top:28px;padding-top:16px;
+  border-top:1px solid rgba(242,238,233,.1);
+  font-size:13px;color:var(--bone-faint);
+  display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap}
+
+/* ------------------------------------------------------------- undersider -- */
+/* Felles topp: overskrift, ingress og handlinger glir inn etter tur. */
+.topp{padding:clamp(44px,7vw,104px) var(--gutter) clamp(36px,5vw,64px);
+  border-bottom:1px solid var(--line);background:var(--ink-900)}
+.topp > *{animation:riseIn 620ms var(--ease-out) both}
+.topp > :nth-child(2){animation-delay:90ms}
+.topp > :nth-child(3){animation-delay:180ms}
+.topp h1{font-size:clamp(32px,6vw,64px);font-weight:700;font-stretch:116%;
+  letter-spacing:-.028em;line-height:1.02;max-width:17ch;text-wrap:balance}
+.topp .lead{margin:22px 0 0;font-size:clamp(17px,2vw,20px);max-width:54ch}
+.topp-act{margin-top:28px;display:flex;gap:12px;flex-wrap:wrap}
+
+.seksjon{padding:clamp(44px,7vw,92px) var(--gutter)}
+.seksjon + .seksjon{border-top:1px solid var(--line)}
+.seksjon-h{font-size:clamp(24px,3.2vw,38px);font-weight:700;font-stretch:112%;
+  letter-spacing:-.02em;line-height:1.08;margin-bottom:clamp(20px,2.6vw,30px);
+  text-wrap:balance}
+.smal{max-width:820px}
+
+.split{display:grid;grid-template-columns:1.05fr 1fr;
+  gap:clamp(26px,5vw,72px);align-items:center}
+@media (max-width:860px){ .split{grid-template-columns:1fr} }
+/* height:auto må til, ellers vinner height-attributtet over aspect-ratio */
+.split img{width:100%;height:auto;aspect-ratio:4/3;object-fit:cover}
+.prosa p{font-size:17px;line-height:1.65;color:var(--bone-soft);max-width:56ch}
+.prosa p + p{margin-top:16px}
+
+.avslutt h2{font-size:clamp(26px,4vw,46px);font-weight:700;font-stretch:116%;
+  letter-spacing:-.025em;line-height:1.04;text-wrap:balance}
+.avslutt .lead{margin:16px 0 0;max-width:50ch}
+.kommer{margin-top:40px;padding-top:18px;border-top:1px solid var(--line);
+  font-size:14px;color:var(--bone-faint);max-width:52ch;line-height:1.6}
+
+/* Kontaktopplysninger */
+.info{list-style:none;padding:0;border-top:1px solid var(--line)}
+.info li{display:flex;gap:16px;align-items:flex-start;padding:20px 0;
+  border-bottom:1px solid var(--line)}
+.info svg{width:24px;height:24px;flex:none;color:var(--crimson-lit);margin-top:2px}
+.info b{display:block;font-size:14px;font-weight:600;color:var(--bone-dim);
+  margin-bottom:4px}
+.info span,.info a{display:block;font-size:17px;line-height:1.5}
+.info a{width:fit-content;padding:4px 0;text-decoration:underline;
+  text-decoration-color:rgba(242,238,233,.4);text-underline-offset:4px;
+  transition:text-decoration-color .2s}
+.info a:hover{text-decoration-color:var(--crimson-lit)}
+.info .mangler{font-size:15px;color:var(--bone-faint)}
+
+/* Spørsmål og svar */
+.faq{border-top:1px solid var(--line)}
+.faq-rad{border-bottom:1px solid var(--line)}
+.faq-rad h3{font-size:inherit;font-weight:inherit}
+.faq-rad button{display:flex;justify-content:space-between;align-items:center;
+  gap:20px;width:100%;min-height:64px;padding:16px 0;appearance:none;background:none;
+  border:0;cursor:pointer;text-align:left;font-size:clamp(17px,1.9vw,20px);
+  font-weight:600;color:var(--bone);transition:color .2s}
+.faq-rad button:hover{color:#fff}
+.faq-rad button svg{width:22px;height:22px;flex:none;color:var(--bone-dim);
+  transition:color .2s}
+.faq-rad button:hover svg,.faq-rad button[aria-expanded=true] svg{
+  color:var(--crimson-lit)}
+.faq-svar{overflow:hidden}
+.faq-svar p{padding:0 44px 22px 0;font-size:16.5px;line-height:1.65;
+  color:var(--bone-soft);max-width:62ch}
+
+/* Filter og sortering over lagerveggen */
+.filter{display:flex;flex-direction:column;gap:18px;
+  padding:clamp(18px,2.4vw,28px) var(--gutter) clamp(16px,2vw,24px)}
+.filter-felt{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px}
+@media (max-width:1000px){ .filter-felt{grid-template-columns:repeat(3,minmax(0,1fr))} }
+@media (max-width:700px){
+  .filter{gap:14px}
+  .filter-felt{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  /* merke og sortering deler øverste rad, skyverne får hele bredden under */
+  .filter-felt .velg:last-child{order:-1}
+  .filter-felt .velg:first-child{order:-2}
+  .filter-felt .omrade{grid-column:1 / -1}
+}
+
+/* Områdeskyver: etikett og valgt område over, spor med to knotter under.
+   To range-inputs ligger oppå hverandre. Selve inputene slipper pekeren
+   gjennom, bare knottene fanger den, så begge kan dras. */
+.omrade{min-width:0}
+.omrade-topp{display:flex;justify-content:space-between;align-items:baseline;gap:10px;
+  font-size:13.5px;font-weight:500;color:var(--bone-dim);margin-bottom:6px}
+.omrade-topp b{font-weight:600;color:var(--bone);white-space:nowrap;
+  font-variant-numeric:tabular-nums}
+/* 46px høy trykkflate rundt et 4px spor. 11px luft i hver ende, så sporet
+   slutter midt under knotten når den står ytterst. */
+.omrade-spor{position:relative;height:46px;--spor:rgba(242,238,233,.24)}
+.omrade-spor::before{content:"";position:absolute;left:11px;right:11px;top:50%;
+  height:4px;margin-top:-2px;
+  background:linear-gradient(to right,var(--spor) var(--fra),
+    var(--crimson-lit) var(--fra),var(--crimson-lit) var(--til),var(--spor) var(--til))}
+.omrade-spor input{position:absolute;inset:0;width:100%;height:100%;margin:0;
+  appearance:none;-webkit-appearance:none;background:transparent;pointer-events:none}
+.omrade-spor input:disabled{opacity:.5}
+.omrade-spor input::-webkit-slider-runnable-track{height:4px;background:transparent}
+.omrade-spor input::-moz-range-track{height:4px;background:transparent}
+.omrade-spor input::-webkit-slider-thumb{-webkit-appearance:none;pointer-events:auto;
+  width:22px;height:22px;margin-top:-9px;background:var(--bone);border:0;
+  border-radius:0;cursor:grab;box-shadow:0 0 0 2px var(--ink-950);
+  transition:transform .2s var(--ease-out)}
+.omrade-spor input::-moz-range-thumb{pointer-events:auto;width:22px;height:22px;
+  background:var(--bone);border:0;border-radius:0;cursor:grab;
+  box-shadow:0 0 0 2px var(--ink-950);transition:transform .2s var(--ease-out)}
+.omrade-spor input:hover::-webkit-slider-thumb,
+.omrade-spor input:active::-webkit-slider-thumb{transform:scale(1.14)}
+.omrade-spor input:hover::-moz-range-thumb,
+.omrade-spor input:active::-moz-range-thumb{transform:scale(1.14)}
+.omrade-spor input:active::-webkit-slider-thumb{cursor:grabbing}
+.omrade-spor input:active::-moz-range-thumb{cursor:grabbing}
+/* fokusringen settes på knotten: selve inputen dekker hele sporet */
+.omrade-spor input:focus-visible{outline:none}
+.omrade-spor input:focus-visible::-webkit-slider-thumb{outline:2px solid #E4DCD6;
+  outline-offset:3px}
+.omrade-spor input:focus-visible::-moz-range-thumb{outline:2px solid #E4DCD6;
+  outline-offset:3px}
+.filter-status{display:flex;justify-content:space-between;align-items:center;
+  gap:12px;flex-wrap:wrap;min-height:44px;font-size:14.5px;color:var(--bone-dim);
+  font-variant-numeric:tabular-nums}
+.nullstill{min-height:44px;padding:8px 0;appearance:none;background:none;border:0;
+  cursor:pointer;font-size:14.5px;font-weight:600;color:var(--bone);
+  text-decoration:underline;text-decoration-color:var(--crimson-lit);
+  text-underline-offset:5px}
+.nullstill:hover{color:#fff}
+.tomt{display:flex;flex-direction:column;align-items:flex-start;gap:18px;
+  margin:0 var(--gutter);padding:clamp(28px,5vw,56px) clamp(18px,3vw,36px);
+  border:1px solid var(--line);background:var(--ink-900)}
+.tomt p{font-size:clamp(18px,2vw,22px);font-weight:600}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{position:relative;min-height:44px;padding:10px 16px;appearance:none;
+  background:transparent;border:1px solid rgba(242,238,233,.28);cursor:pointer;
+  font-size:14.5px;font-weight:600;color:var(--bone-soft);
+  transition:color .2s,border-color .2s}
+.chip:hover{border-color:var(--bone);color:var(--bone)}
+.chip[aria-pressed=true]{color:#171114;border-color:var(--bone)}
+/* den lyse flaten glir fra forrige valg til det nye */
+.chip-valgt{position:absolute;inset:-1px;background:var(--bone)}
+.chip-tekst{position:relative;display:inline-flex;align-items:center;gap:8px}
+.chip-tekst i{font-style:normal;font-weight:500;font-size:13px;opacity:.7;
+  font-variant-numeric:tabular-nums}
+.velg{display:block;min-width:0}
+.velg span{display:block;font-size:13.5px;font-weight:500;color:var(--bone-dim);
+  margin-bottom:6px}
+/* 16px: mindre skrift får iOS til å zoome inn ved fokus */
+.velg select{width:100%;min-height:46px;padding:9px 12px;border-radius:0;font-size:16px;
+  background:var(--ink-900);border:1px solid rgba(242,238,233,.28);color:var(--bone);
+  cursor:pointer;text-overflow:ellipsis;transition:border-color .2s}
+.velg select:hover{border-color:var(--bone)}
+.velg option{background:var(--ink-900);color:var(--bone)}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;
+    animation-delay:0ms!important;transition-duration:.001ms!important}
+}

@@ -1,0 +1,16 @@
+[
+ {"kode":"476149807","merke":"Tesla","modell":"Model Y","variant":"Long Range AWD","aar":2022,"km":81896,"pris":329900,"drivstoff":"El","drivlinje":"Firehjulsdrift","hk":514,"farge":"Svart","kar":"SUV","rekkevidde":"514 km"},
+ {"kode":"475492626","merke":"Toyota","modell":"RAV4","variant":"Plug-in Hybrid AWD","aar":2021,"km":65000,"pris":379900,"drivstoff":"Ladbar hybrid","drivlinje":"Firehjulsdrift","hk":421,"farge":"Grå","kar":"SUV"},
+ {"kode":"473106784","merke":"BMW","modell":"330e","variant":"xDrive Touring M Sport","aar":2021,"km":108000,"pris":339900,"drivstoff":"Ladbar hybrid","drivlinje":"Firehjulsdrift","hk":296,"farge":"Blå","kar":"Stasjonsvogn"},
+ {"kode":"474505130","merke":"Tesla","modell":"Model 3","variant":"Long Range AWD Facelift","aar":2021,"km":82692,"pris":279900,"drivstoff":"El","drivlinje":"Firehjulsdrift","hk":498,"farge":"Svart","kar":"Sedan","rekkevidde":"580 km"},
+ {"kode":"474141015","merke":"Tesla","modell":"Model 3","variant":"Long Range AWD Facelift","aar":2021,"km":79000,"pris":269900,"drivstoff":"El","drivlinje":"Firehjulsdrift","hk":498,"farge":"Hvit","kar":"Sedan","rekkevidde":"580 km"},
+ {"kode":"475849537","merke":"Mitsubishi","modell":"Outlander","variant":"Instyle+ 2.4 PHEV","aar":2019,"km":164444,"pris":179900,"drivstoff":"Ladbar hybrid","drivlinje":"Firehjulsdrift","hk":209,"farge":"Svart","kar":"SUV"},
+ {"kode":"476001741","merke":"Mitsubishi","modell":"Outlander","variant":"Instyle+ PHEV","aar":2017,"km":135000,"pris":169900,"drivstoff":"Ladbar hybrid","drivlinje":"Firehjulsdrift","hk":284,"farge":"Hvit","kar":"SUV"},
+ {"kode":"472198670","merke":"Ford","modell":"S-MAX","variant":"150 hk Titanium 7-seter","aar":2018,"km":157000,"pris":169900,"drivstoff":"Diesel","drivlinje":"Forhjulsdrift","hk":150,"farge":"Grå","kar":"Flerbruksbil"},
+ {"kode":"476151606","merke":"Volkswagen","modell":"Passat","variant":"GTE 1.4 272 hk","aar":2018,"km":116800,"pris":159900,"drivstoff":"Ladbar hybrid","drivlinje":"Forhjulsdrift","hk":272,"farge":"Grå","kar":"Stasjonsvogn"},
+ {"kode":"475852954","merke":"Audi","modell":"A3","variant":"e-tron 1.4 258 hk","aar":2018,"km":92500,"pris":159900,"drivstoff":"Ladbar hybrid","drivlinje":"Forhjulsdrift","hk":258,"farge":"Grå","kar":"Kombi"},
+ {"kode":"475235521","merke":"Volkswagen","modell":"Passat","variant":"GTE 1.4 TSI","aar":2017,"km":148500,"pris":124900,"drivstoff":"Ladbar hybrid","drivlinje":"Forhjulsdrift","hk":272,"farge":"Svart","kar":"Stasjonsvogn"},
+ {"kode":"475537276","merke":"Subaru","modell":"XV","variant":"Premium 2.0 150 hk","aar":2013,"km":166700,"pris":109900,"drivstoff":"Bensin","drivlinje":"Firehjulsdrift","hk":150,"farge":"Blå","kar":"SUV"},
+ {"kode":"473574945","merke":"Volkswagen","modell":"Golf VII","variant":"1.6 TDI","aar":2014,"km":130000,"pris":104900,"drivstoff":"Diesel","drivlinje":"Forhjulsdrift","hk":105,"farge":"Svart","kar":"Kombi"},
+ {"kode":"475565955","merke":"Fiat","modell":"500e","variant":"Electric","aar":2015,"km":57000,"pris":59900,"drivstoff":"El","drivlinje":"Forhjulsdrift","hk":33,"farge":"Blå","kar":"Kombi","solgt":true}
+]
