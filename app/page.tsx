@@ -62,7 +62,7 @@ export default function Hjem() {
 
         <section id="biler">
           <div className="wall-head">
-            <h2>Biler til salgs</h2>
+            <h2>Fremhevede biler til salgs</h2>
             <p>
               {antall} biler på lager.{" "}
               <a href={FINN_BUTIKK} target="_blank" rel="noopener">

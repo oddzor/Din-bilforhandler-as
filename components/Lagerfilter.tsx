@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "motion/react";
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import { nok, ruteKlasse, type Bil } from "@/lib/cars";
 import {
   antallAktive,
@@ -23,9 +23,16 @@ const PRIS_STEG = 10_000;
 /**
  * Hele lageret med filter på drivstoff, merke, årsmodell, kilometerstand og
  * pris, pluss sortering. Rutene flytter seg til ny plass i stedet for å
- * hoppe, så man ser hva som ble igjen.
+ * hoppe, så man ser hva som ble igjen. Sidens overskrift sendes inn som
+ * children og står øverst i samme felt som filteret, så bilene kommer høyt.
  */
-export default function Lagerfilter({ biler }: { biler: readonly Bil[] }) {
+export default function Lagerfilter({
+  biler,
+  children,
+}: {
+  biler: readonly Bil[];
+  children?: ReactNode;
+}) {
   const [filter, setFilter] = useState<Filter>(TOMT_FILTER);
   const [sortering, setSortering] = useState<Sortering>("pris-ned");
 
@@ -59,27 +66,42 @@ export default function Lagerfilter({ biler }: { biler: readonly Bil[] }) {
   return (
     <>
       <div className="filter">
-        <div className="chips" role="group" aria-label="Filtrer på drivstoff">
-          {["", ...valg.drivstoff].map((v) => (
-            <button
-              key={v}
-              type="button"
-              className="chip"
-              aria-pressed={filter.drivstoff === v}
-              onClick={() => sett({ drivstoff: v })}
-            >
-              {filter.drivstoff === v && (
-                <motion.span
-                  layoutId="chip-valgt"
-                  className="chip-valgt"
-                  transition={{ type: "spring", stiffness: 420, damping: 36 }}
-                />
-              )}
-              <span className="chip-tekst">
-                {v === "" ? "Alle" : v} <i>{antallDrivstoff(v)}</i>
-              </span>
-            </button>
-          ))}
+        {children}
+
+        <div className="filter-rad">
+          <div className="chips" role="group" aria-label="Filtrer på drivstoff">
+            {["", ...valg.drivstoff].map((v) => (
+              <button
+                key={v}
+                type="button"
+                className="chip"
+                aria-pressed={filter.drivstoff === v}
+                onClick={() => sett({ drivstoff: v })}
+              >
+                {filter.drivstoff === v && (
+                  <motion.span
+                    layoutId="chip-valgt"
+                    className="chip-valgt"
+                    transition={{ type: "spring", stiffness: 420, damping: 36 }}
+                  />
+                )}
+                <span className="chip-tekst">
+                  {v === "" ? "Alle" : v} <i>{antallDrivstoff(v)}</i>
+                </span>
+              </button>
+            ))}
+          </div>
+
+          <div className="filter-status">
+            <p aria-live="polite">
+              Viser {synlige.length} av {biler.length} biler
+            </p>
+            {aktive > 0 && (
+              <button type="button" className="nullstill" onClick={nullstill}>
+                Nullstill filter ({aktive})
+              </button>
+            )}
+          </div>
         </div>
 
         <div className="filter-felt">
@@ -143,17 +165,6 @@ export default function Lagerfilter({ biler }: { biler: readonly Bil[] }) {
             </select>
           </label>
         </div>
-
-        <div className="filter-status">
-          <p aria-live="polite">
-            Viser {synlige.length} av {biler.length} biler
-          </p>
-          {aktive > 0 && (
-            <button type="button" className="nullstill" onClick={nullstill}>
-              Nullstill filter ({aktive})
-            </button>
-          )}
-        </div>
       </div>
 
       {synlige.length === 0 ? (
@@ -164,7 +175,7 @@ export default function Lagerfilter({ biler }: { biler: readonly Bil[] }) {
           </button>
         </div>
       ) : (
-        <div className="wall">
+        <div className="wall wall-tett">
           <AnimatePresence mode="popLayout" initial={false}>
             {synlige.map((b) => (
               <motion.article

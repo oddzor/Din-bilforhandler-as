@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import Lagerfilter from "@/components/Lagerfilter";
-import SideTopp from "@/components/SideTopp";
 import { biler, FINN_BUTIKK, tilSalgs } from "@/lib/cars";
 
 export const metadata: Metadata = {
@@ -16,15 +15,17 @@ export default function VareBiler() {
     <>
       <Header />
       <main id="innhold">
-        <SideTopp
-          tittel="Våre biler"
-          ingress={`${tilSalgs.length} biler på lager akkurat nå. Alle er fotografert i hallen vår og har full annonse på FINN.`}
-        >
-          <a className="btn btn-s" href={FINN_BUTIKK} target="_blank" rel="noopener">
-            Alle annonser på FINN
-          </a>
-        </SideTopp>
-        <Lagerfilter biler={biler} />
+        <Lagerfilter biler={biler}>
+          <div className="lager-topp">
+            <h1>Våre biler</h1>
+            <p>
+              {tilSalgs.length} biler på lager.{" "}
+              <a href={FINN_BUTIKK} target="_blank" rel="noopener">
+                Alle annonser på FINN
+              </a>
+            </p>
+          </div>
+        </Lagerfilter>
       </main>
       <Footer />
     </>

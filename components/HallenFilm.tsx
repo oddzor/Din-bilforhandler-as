@@ -7,11 +7,27 @@ import { useEffect, useRef } from "react";
  * Filmen toner ut til svart de siste 0,6 sekundene (laget for å gå i løkke).
  * Vi stopper derfor her, på det siste bildet der alt står ferdig.
  */
-const HOLD_SEKUNDER = 12;
+const HOLD_SEKUNDER = 10;
 
+/**
+ * Plakaten er første bilde i filmen, så ruta ikke står tom mens du ruller
+ * ned og før avspillingen starter.
+ */
 const FILMER = [
-  { klasse: "film-bred", src: "/videos/hallen-16x9.mp4", bredde: 1920, hoyde: 1080 },
-  { klasse: "film-hoy", src: "/videos/hallen-9x16.mp4", bredde: 1080, hoyde: 1920 },
+  {
+    klasse: "film-bred",
+    src: "/videos/hallen-16x9.mp4",
+    plakat: "/videos/hallen-16x9.jpg",
+    bredde: 1920,
+    hoyde: 1080,
+  },
+  {
+    klasse: "film-hoy",
+    src: "/videos/hallen-9x16.mp4",
+    plakat: "/videos/hallen-9x16.jpg",
+    bredde: 1080,
+    hoyde: 1920,
+  },
 ] as const;
 
 /**
@@ -76,6 +92,7 @@ export default function HallenFilm() {
           muted
           playsInline
           preload="none"
+          poster={f.plakat}
           aria-hidden="true"
           tabIndex={-1}
         >
